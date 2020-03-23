@@ -2,6 +2,6 @@
 /public/build/
 
 # tests
-/coverage
+/coverage/
 
 .DS_Store
