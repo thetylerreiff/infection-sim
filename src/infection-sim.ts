@@ -1,60 +1,6 @@
 import { random } from "./utils";
 
-type NodeStatus = "healthy" | "sick" | "recovered" | "vaccinated" | "dead";
-
-interface NodeOptions {
-  x: number;
-  y: number;
-  dx: number;
-  dy: number;
-  radius: number;
-  status: NodeStatus;
-  infectedAt: number;
-}
-
-class SimNode {
-  id: number;
-  infectedAt: number | null;
-  status: NodeStatus;
-  x: number;
-  y: number;
-  dx: number;
-  dy: number;
-  radius: number;
-
-  constructor(options?: Partial<NodeOptions>) {
-    this.id = Date.now();
-    this.infectedAt = null;
-    this.x = options.x;
-    this.y = options.y;
-    this.status = options?.status || "healthy";
-    this.dx = options?.dx || 1;
-    this.dy = options?.dy || -1;
-    this.radius = options?.radius || 1;
-  }
-  interact(contact: SimNode) {
-    if (this.status === "sick" && contact.status === "healthy") {
-      contact.infect();
-    } else if (contact.status === "sick" && this.status === "healthy") {
-      this.infect();
-    }
-  }
-  infect() {
-    this.status = "sick";
-    this.infectedAt = Date.now();
-  }
-  recover() {
-    this.status = "recovered";
-  }
-  die() {
-    this.status = "dead";
-    this.dx = 0;
-    this.dy = 0;
-  }
-  vaccinate(){
-    this.status = 'vaccinated'
-  }
-}
+import { SimNode } from './sim-node'
 
 interface SimOptions {
   height: number;
@@ -114,16 +60,16 @@ export class InfectionSim {
       const node = new SimNode({
         x: random(this.width),
         y: random(this.height),
-        dx: Math.random(),
-        dy: Math.random()
+        dx: random(),
+        dy: random()
       });
       this._nodes.push(node);
     }
     const sickNode = new SimNode({
       x: random(this.width),
       y: random(this.height),
-      dx: Math.random(),
-      dy: Math.random()
+      dx: random(),
+      dy: random()
     });
     sickNode.infect();
     this._nodes.push(sickNode);
@@ -162,7 +108,7 @@ export class InfectionSim {
       if (node.status === "sick") {
         // recovery after 'recoveryTime seconads
         if (now - node.infectedAt > this.recoveryTime * 1000) {
-          if (Math.random() > 0.991) {
+          if (random() > 0.991) {
             node.die();
           } else {
             node.recover();
